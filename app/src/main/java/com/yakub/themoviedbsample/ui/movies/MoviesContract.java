@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface MoviesContract {
   interface View {
+    int getSelectedOptionItemIndex();
+
     void showMovies(List<Movie> questions);
 
     void clearMovies();

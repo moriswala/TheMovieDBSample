@@ -2,12 +2,14 @@ package com.yakub.themoviedbsample.ui.movies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -15,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.yakub.themoviedbsample.R;
@@ -39,6 +42,7 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   MoviesPresenter presenter;
   private DrawerLayout mDrawerLayout;
   private int selectedOptionItem;
+  private SearchView searchView;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -61,8 +65,14 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     // Setup recycler view
     setupDrawer();
     adapter = new MoviesAdapter(new ArrayList<>());
-    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-    mRecyclerView.setLayoutManager(layoutManager);
+//    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+//    mRecyclerView.setLayoutManager(layoutManager);
+
+    GridLayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+    mRecyclerView.setLayoutManager(mLayoutManager);
+    mRecyclerView.setHasFixedSize(true);
+    mRecyclerView.setNestedScrollingEnabled(false);
+
     mRecyclerView.setAdapter(adapter);
     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
     adapter.setOnItemClickListener(
@@ -71,21 +81,30 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     // Refresh layout
     refreshLayout.setOnRefreshListener(() -> {
       switch (selectedOptionItem) {
-        case R.id.popular:
+        case 0:
           presenter.loadPopularMovies(true);
           break;
-        case R.id.top:
+        case 1:
           presenter.loadTopRatedMovies(true);
           break;
-        case R.id.search:
-//          presenter.searchMovie(true);
-//          break;
+        case 2:
+          if(searchView!=null) {
+            searchView.setFocusable(true);
+            searchView.setIconified(false);
+            presenter.searchMovie(true, searchView.getQuery().toString());
+          }
+          break;
         default:
           break;
       }
     });
     // Set notification text visible first
     notificationText.setVisibility(View.GONE);
+  }
+
+  @Override
+  public int getSelectedOptionItemIndex(){
+    return selectedOptionItem;
   }
 
   private void setupDrawer() {
@@ -100,7 +119,7 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     if (navigationView != null) {
       setupDrawerContent(navigationView);
     }
-    selectedOptionItem = R.id.popular;
+    selectedOptionItem = 0;
   }
 
   @Override
@@ -109,6 +128,9 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
       case android.R.id.home:
         // Open the navigation drawer when the home icon is selected from the toolbar.
         mDrawerLayout.openDrawer(GravityCompat.START);
+        if(searchView!=null && !searchView.isIconified()){
+            searchView.setIconified(true);
+        }
         return true;
     }
     return super.onOptionsItemSelected(item);
@@ -132,9 +154,10 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
                       presenter.loadTopRatedMovies(true);
                       break;
                     case R.id.search:
-//                      Intent intent =
-//                              new Intent(MoviesActivity.this, StatisticsActivity.class);
-//                      startActivity(intent);
+                      if(searchView!=null) {
+                        searchView.setFocusable(true);
+                        searchView.setIconified(false);
+                      }
                       break;
                     default:
                       break;
@@ -152,18 +175,44 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     getMenuInflater().inflate(R.menu.questions, menu);
 
     // Setup search widget in action bar
-    SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+    searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
     searchView.setQueryHint(getString(R.string.search_hint));
     searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-
+//    searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//      @Override
+//      public boolean onClose() {
+//        presenter.loadPopularMovies(true);
+//        return false;
+//      }
+//    });
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+      public Runnable runnable;
+      public String searchText;
+      public Handler handler = new Handler();
+
       @Override public boolean onQueryTextSubmit(String query) {
         return false;
       }
 
       @Override public boolean onQueryTextChange(String newText) {
-        presenter.search(newText);
-        return true;
+
+        searchText = newText;
+        // Remove all previous callbacks.
+        handler.removeCallbacks(runnable);
+
+        runnable = new Runnable() {
+          @Override
+          public void run() {
+            if(searchText!=null && searchText.length()>3)
+              presenter.searchMovie(true, searchText);
+
+            if(searchText==null || searchText.length()==0)
+              presenter.loadPopularMovies(true);
+          }
+        };
+        handler.postDelayed(runnable, 1000);
+
+        return false;
       }
     });
 

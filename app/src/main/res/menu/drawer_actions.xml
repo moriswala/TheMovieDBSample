@@ -18,15 +18,15 @@
 
     <item
         android:id="@+id/popular"
-        android:icon="@drawable/leak_canary_icon"
+        android:icon="@drawable/popular"
         android:title="@string/title_popular" />
     <item
         android:id="@+id/top"
-        android:icon="@drawable/leak_canary_icon"
+        android:icon="@drawable/top_rated_new"
         android:title="@string/title_top" />
     <item
         android:id="@+id/search"
-        android:icon="@drawable/leak_canary_icon"
+        android:icon="@drawable/search"
         android:title="@string/title_search" />
 
 </menu>

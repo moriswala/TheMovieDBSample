@@ -102,6 +102,9 @@ dependencies {
   //material searchview
   implementation "com.miguelcatalan:materialsearchview:$rootProject.materialSearchViewVersion"
 
+  //Image loading and caching
+  implementation "com.facebook.fresco:fresco:$rootProject.frescoVersion"
+
   // Local Unit Test
   testImplementation "junit:junit:$rootProject.junitVersion"
   testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"

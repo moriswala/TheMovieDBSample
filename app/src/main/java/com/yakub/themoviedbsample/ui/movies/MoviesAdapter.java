@@ -1,5 +1,6 @@
 package com.yakub.themoviedbsample.ui.movies;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.yakub.themoviedbsample.R;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.ui.base.BaseRecyclerViewAdapter;
@@ -19,10 +21,11 @@ import java.util.List;
 
 class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.QuestionViewHolder> {
   class QuestionViewHolder extends RecyclerView.ViewHolder {
+    @BindView(R.id.imgCoverImage) SimpleDraweeView imgCoverImage;
     @BindView(R.id.text_title) TextView titleText;
-    @BindView(R.id.text_user) TextView userText;
-    @BindView(R.id.text_created_time) TextView createdTimeText;
-    @BindView(R.id.image_profile) ImageView profileImage;
+//    @BindView(R.id.text_user) TextView userText;
+//    @BindView(R.id.text_created_time) TextView createdTimeText;
+//    @BindView(R.id.image_profile) ImageView profileImage;
 
     public QuestionViewHolder(View view) {
       super(view);
@@ -47,9 +50,11 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.QuestionViewHo
     QuestionViewHolder vh = (QuestionViewHolder) viewHolder; //safe cast
     Movie movie = moviesList.get(i);
     vh.titleText.setText(movie.getTitle());
-    vh.userText.setText(movie.getOverview());
+//    vh.userText.setText(movie.getOverview());
 //    vh.createdTimeText.setText(DateTimeUtils.formatRelativeTime(movie.getReleaseDate()));
-    Glide.with(vh.profileImage).load(movie.getBackdropPath()).into(vh.profileImage);
+//    Glide.with(vh.profileImage).load(movie.getBackdropPath()).into(vh.profileImage);
+    Uri uri = Uri.parse("https://image.tmdb.org/t/p/w300/"+movie.getBackdropPath());
+    vh.imgCoverImage.setImageURI(uri);
   }
 
   @Override public int getItemCount() {

@@ -2,6 +2,7 @@ package com.yakub.themoviedbsample;
 
 import android.app.Application;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 import com.yakub.themoviedbsample.data.DaggerMoviesRepositoryComponent;
@@ -18,7 +19,7 @@ public class AndroidApplication extends Application {
     super.onCreate();
 
     initializeDependencies();
-
+    Fresco.initialize(this);
     if (BuildConfig.DEBUG) {
       Timber.plant(new Timber.DebugTree());
       Stetho.initializeWithDefaults(this);

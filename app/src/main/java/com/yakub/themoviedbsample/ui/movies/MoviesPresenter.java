@@ -5,6 +5,7 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
 
+import com.yakub.themoviedbsample.R;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.data.repository.MoviesRepository;
 import com.yakub.themoviedbsample.util.schedulers.RunOn;
@@ -51,7 +52,19 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
   }
 
   @Override @OnLifecycleEvent(Lifecycle.Event.ON_RESUME) public void onAttach() {
-    loadPopularMovies( false);
+    switch (view.getSelectedOptionItemIndex()) {
+      case 0:
+        loadPopularMovies(false);
+        break;
+      case 1:
+        loadTopRatedMovies(false);
+        break;
+      case 2:
+//          presenter.searchMovie(true);
+//          break;
+      default:
+        break;
+    }
   }
 
   @Override @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE) public void onDetach() {
