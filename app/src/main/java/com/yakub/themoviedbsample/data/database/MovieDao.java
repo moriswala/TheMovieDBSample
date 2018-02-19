@@ -7,7 +7,6 @@ import android.arch.persistence.room.Query;
 
 import com.yakub.themoviedbsample.data.Config;
 import com.yakub.themoviedbsample.data.model.Movie;
-import com.yakub.themoviedbsample.data.model.Question;
 
 import java.util.List;
 
@@ -23,11 +22,20 @@ public interface MovieDao {
     Flowable<List<Movie>> getAllMovies();
 
     @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " WHERE id == :id")
-    Flowable<Movie> getQuestionById(int id);
+    Flowable<Movie> getMovieById(int id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Movie question);
+    void insert(Movie movie);
 
     @Query("DELETE FROM " + Config.MOVIE_TABLE_NAME)
     void deleteAll();
+
+    @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " ORDER BY "+Config.Params.popularity + " DESC")
+    Flowable<List<Movie>> getAllPopularMovies();
+
+    @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " ORDER BY avgVote"+ " DESC")
+    Flowable<List<Movie>> getAllTopRatedMovies();
+
+    @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " WHERE "+Config.Params.title+" like :queryText")
+    Flowable<List<Movie>> searchMovie(String queryText);
 }

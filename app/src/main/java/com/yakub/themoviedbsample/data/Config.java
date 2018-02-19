@@ -44,5 +44,7 @@ public class Config {
     public static final String status = "status";
     public static final String tagline = "tagline";
 
-  }
+      public static final String query = "query";
+      public static final String API_KEY = "api_key";
+    }
 }

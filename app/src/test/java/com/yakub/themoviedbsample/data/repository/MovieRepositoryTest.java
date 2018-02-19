@@ -1,7 +1,7 @@
 package com.yakub.themoviedbsample.data.repository;
 
 import com.yakub.themoviedbsample.data.model.Movie;
-import com.yakub.themoviedbsample.data.model.Question;
+
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.TestSubscriber;
 import java.util.Arrays;
@@ -121,7 +121,7 @@ public class MovieRepositoryTest {
     given(remoteDataSource.loadPopularMovies(true)).willReturn(Flowable.just(questions));
 
     // When
-    repository.refreshData().subscribe(questionsTestSubscriber);
+    repository.refreshPopularMoviesData().subscribe(questionsTestSubscriber);
 
     // Then
     then(localDataSource).should().clearData();
@@ -132,7 +132,7 @@ public class MovieRepositoryTest {
     given(remoteDataSource.loadPopularMovies(true)).willReturn(Flowable.just(questions));
 
     // When
-    repository.refreshData().subscribe(questionsTestSubscriber);
+    repository.refreshPopularMoviesData().subscribe(questionsTestSubscriber);
 
     // Then
     assertThat(repository.caches, equalTo(questions));
@@ -143,7 +143,7 @@ public class MovieRepositoryTest {
     given(remoteDataSource.loadPopularMovies(true)).willReturn(Flowable.just(questions));
 
     // When
-    repository.refreshData().subscribe(questionsTestSubscriber);
+    repository.refreshPopularMoviesData().subscribe(questionsTestSubscriber);
 
     // Then
     then(localDataSource).should().addMovie(question1);

@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MoviesActivity extends BaseActivity implements MoviesContract.View {
-  @BindView(R.id.recycler_question) RecyclerView questionRecyclerView;
+  @BindView(R.id.recycler_question) RecyclerView mRecyclerView;
   @BindView(R.id.refresh) SwipeRefreshLayout refreshLayout;
   @BindView(R.id.text_notification) TextView notificationText;
 
@@ -38,13 +38,14 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   @Inject
   MoviesPresenter presenter;
   private DrawerLayout mDrawerLayout;
+  private int selectedOptionItem;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
     initializePresenter();
-    setTitle(getString(R.string.app_name));
+    setTitle(R.string.title_popular);
     setupWidgets();
   }
 
@@ -61,14 +62,28 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     setupDrawer();
     adapter = new MoviesAdapter(new ArrayList<>());
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-    questionRecyclerView.setLayoutManager(layoutManager);
-    questionRecyclerView.setAdapter(adapter);
-    questionRecyclerView.setItemAnimator(new DefaultItemAnimator());
+    mRecyclerView.setLayoutManager(layoutManager);
+    mRecyclerView.setAdapter(adapter);
+    mRecyclerView.setItemAnimator(new DefaultItemAnimator());
     adapter.setOnItemClickListener(
         (view, position) -> presenter.getMovie(adapter.getItem(position).getId()));
 
     // Refresh layout
-    refreshLayout.setOnRefreshListener(() -> presenter.loadPopularMovies(true));
+    refreshLayout.setOnRefreshListener(() -> {
+      switch (selectedOptionItem) {
+        case R.id.popular:
+          presenter.loadPopularMovies(true);
+          break;
+        case R.id.top:
+          presenter.loadTopRatedMovies(true);
+          break;
+        case R.id.search:
+//          presenter.searchMovie(true);
+//          break;
+        default:
+          break;
+      }
+    });
     // Set notification text visible first
     notificationText.setVisibility(View.GONE);
   }
@@ -85,6 +100,7 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     if (navigationView != null) {
       setupDrawerContent(navigationView);
     }
+    selectedOptionItem = R.id.popular;
   }
 
   @Override
@@ -104,14 +120,16 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
               new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(MenuItem menuItem) {
+                  selectedOptionItem = menuItem.getItemId();
                   switch (menuItem.getItemId()) {
                     case R.id.popular:
                       // Do nothing, we're already on that screen
+                      setTitle(R.string.title_popular);
+                      presenter.loadPopularMovies(true);
                       break;
                     case R.id.top:
-//                      Intent intent =
-//                              new Intent(MoviesActivity.this, StatisticsActivity.class);
-//                      startActivity(intent);
+                      setTitle(R.string.title_top);
+                      presenter.loadTopRatedMovies(true);
                       break;
                     case R.id.search:
 //                      Intent intent =

@@ -72,6 +72,30 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
     disposeBag.add(disposable);
   }
 
+  @Override public void loadTopRatedMovies(boolean onlineRequired) {
+    // Clear old data on view
+    view.clearMovies();
+
+    // Load new one and populate it into view
+    Disposable disposable = repository.loadTopRatedMovies(onlineRequired)
+            .subscribeOn(ioScheduler)
+            .observeOn(uiScheduler)
+            .subscribe(this::handleReturnedData, this::handleError, () -> view.stopLoadingIndicator());
+    disposeBag.add(disposable);
+  }
+
+  @Override public void searchMovie(boolean onlineRequired, String queryText) {
+    // Clear old data on view
+    view.clearMovies();
+
+    // Load new one and populate it into view
+    Disposable disposable = repository.searchMovie(onlineRequired, queryText)
+            .subscribeOn(ioScheduler)
+            .observeOn(uiScheduler)
+            .subscribe(this::handleReturnedData, this::handleError, () -> view.stopLoadingIndicator());
+    disposeBag.add(disposable);
+  }
+
   @Override public void getMovie(long movieId) {
     Disposable disposable = repository.getMovie(movieId)
         .filter(movie -> movie != null)

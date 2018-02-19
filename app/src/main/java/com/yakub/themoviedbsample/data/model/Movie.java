@@ -52,7 +52,7 @@ public class Movie {
     private String overview;
 
     @SerializedName(Config.Params.popularity)
-    private double popularity;
+    private float popularity;
 
     @SerializedName(Config.Params.poster_path)
     private String posterPath;
@@ -141,7 +141,7 @@ public class Movie {
         return overview;
     }
 
-    public double getPopularity() {
+    public float getPopularity() {
         return popularity;
     }
 
@@ -241,7 +241,7 @@ public class Movie {
         this.overview = overview;
     }
 
-    public void setPopularity(double popularity) {
+    public void setPopularity(float popularity) {
         this.popularity = popularity;
     }
 

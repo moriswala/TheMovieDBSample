@@ -9,7 +9,11 @@ import io.reactivex.Flowable;
 public interface MoviesDataSource {
   Flowable<List<Movie>> loadPopularMovies(boolean forceRemote);
 
-  void addMovie(Movie question);
+    Flowable<List<Movie>> loadTopRatedMovies(boolean forceRemote);
+
+    Flowable<List<Movie>> searchMovie(boolean forceRemote, String queryText);
+
+    void addMovie(Movie question);
 
   void clearData();
 }

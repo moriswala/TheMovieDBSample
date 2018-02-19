@@ -13,16 +13,26 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 
 public class MoviesRemoteDataSource implements MoviesDataSource {
-  private MovieService questionService;
+  private MovieService movieService;
 
   @Inject
   public MoviesRemoteDataSource(MovieService questionService) {
-    this.questionService = questionService;
+    this.movieService = questionService;
   }
 
   @Override
   public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote) {
-    return questionService.loadPopularMovies(Config.API_KEY).map(MovieListResponce::getMovies);
+    return movieService.loadPopularMovies(Config.API_KEY).map(MovieListResponce::getMovies);
+  }
+
+  @Override
+  public Flowable<List<Movie>> loadTopRatedMovies(boolean forceRemote) {
+    return movieService.loadTopRatedMovies(Config.API_KEY).map(MovieListResponce::getMovies);
+  }
+
+  @Override
+  public Flowable<List<Movie>> searchMovie(boolean forceRemote, String queryText) {
+    return movieService.searchMovie(Config.API_KEY, queryText).map(MovieListResponce::getMovies);
   }
 
   @Override

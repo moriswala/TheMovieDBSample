@@ -28,7 +28,7 @@ public class MoviesRepository implements MoviesDataSource {
 
   @Override public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote) {
     if (forceRemote) {
-      return refreshData();
+      return refreshPopularMoviesData();
     } else {
       if (caches.size() > 0) {
         // if cache is available, return it immediately
@@ -43,7 +43,51 @@ public class MoviesRepository implements MoviesDataSource {
             .toFlowable()
             .filter(list -> !list.isEmpty())
             .switchIfEmpty(
-                refreshData()); // If local data is empty, fetch from remote source instead.
+                refreshPopularMoviesData()); // If local data is empty, fetch from remote source instead.
+      }
+    }
+  }
+
+  @Override public Flowable<List<Movie>> loadTopRatedMovies(boolean forceRemote) {
+    if (forceRemote) {
+      return refreshTopRatedMoviesData();
+    } else {
+      if (caches.size() > 0) {
+        // if cache is available, return it immediately
+        return Flowable.just(caches);
+      } else {
+        // else return data from local storage
+        return localDataSource.loadTopRatedMovies(false)
+                .take(1)
+                .flatMap(Flowable::fromIterable)
+                .doOnNext(question -> caches.add(question))
+                .toList()
+                .toFlowable()
+                .filter(list -> !list.isEmpty())
+                .switchIfEmpty(
+                        refreshTopRatedMoviesData()); // If local data is empty, fetch from remote source instead.
+      }
+    }
+  }
+
+  @Override public Flowable<List<Movie>> searchMovie(boolean forceRemote, String queryText) {
+    if (forceRemote) {
+      return refreshSearchMovieData(queryText);
+    } else {
+      if (caches.size() > 0) {
+        // if cache is available, return it immediately
+        return Flowable.just(caches);
+      } else {
+        // else return data from local storage
+        return localDataSource.searchMovie(false, queryText)
+                .take(1)
+                .flatMap(Flowable::fromIterable)
+                .doOnNext(question -> caches.add(question))
+                .toList()
+                .toFlowable()
+                .filter(list -> !list.isEmpty())
+                .switchIfEmpty(
+                        refreshSearchMovieData(queryText)); // If local data is empty, fetch from remote source instead.
       }
     }
   }
@@ -54,8 +98,44 @@ public class MoviesRepository implements MoviesDataSource {
    *
    * @return the Flowable of newly fetched data.
    */
-  Flowable<List<Movie>> refreshData() {
+  Flowable<List<Movie>> refreshPopularMoviesData() {
     return remoteDataSource.loadPopularMovies(true).doOnNext(list -> {
+      // Clear cache
+      caches.clear();
+      // Clear data in local storage
+      localDataSource.clearData();
+    }).flatMap(Flowable::fromIterable).doOnNext(question -> {
+      caches.add(question);
+      localDataSource.addMovie(question);
+    }).toList().toFlowable();
+  }
+
+  /**
+   * Fetches data from remote source.
+   * Save it into both local database and cache.
+   *
+   * @return the Flowable of newly fetched data.
+   */
+  Flowable<List<Movie>> refreshSearchMovieData(String queryText) {
+    return remoteDataSource.searchMovie(true, queryText).doOnNext(list -> {
+      // Clear cache
+      caches.clear();
+      // Clear data in local storage
+      localDataSource.clearData();
+    }).flatMap(Flowable::fromIterable).doOnNext(question -> {
+      caches.add(question);
+      localDataSource.addMovie(question);
+    }).toList().toFlowable();
+  }
+
+  /**
+   * Fetches data from remote source.
+   * Save it into both local database and cache.
+   *
+   * @return the Flowable of newly fetched data.
+   */
+  Flowable<List<Movie>> refreshTopRatedMoviesData() {
+    return remoteDataSource.loadTopRatedMovies(true).doOnNext(list -> {
       // Clear cache
       caches.clear();
       // Clear data in local storage

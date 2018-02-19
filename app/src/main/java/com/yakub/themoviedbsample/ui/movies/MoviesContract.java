@@ -24,6 +24,10 @@ public interface MoviesContract {
   interface Presenter extends BasePresenter<MoviesContract.View> {
     void loadPopularMovies(boolean onlineRequired);
 
+    void loadTopRatedMovies(boolean onlineRequired);
+
+    void searchMovie(boolean onlineRequired, String queryText);
+
     void getMovie(long questionId);
 
     void search(String questionTitle);
