@@ -1,28 +1,32 @@
 package com.yakub.themoviedbsample.data.repository;
 
 import android.support.annotation.VisibleForTesting;
-import com.yakub.themoviedbsample.data.model.Question;
-import io.reactivex.Flowable;
+
+import com.yakub.themoviedbsample.data.model.Movie;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 
-public class QuestionRepository implements QuestionDataSource {
+import io.reactivex.Flowable;
 
-  private QuestionDataSource remoteDataSource;
-  private QuestionDataSource localDataSource;
+public class MoviesRepository implements MoviesDataSource {
 
-  @VisibleForTesting List<Question> caches;
+  private MoviesDataSource remoteDataSource;
+  private MoviesDataSource localDataSource;
 
-  @Inject public QuestionRepository(@Local QuestionDataSource localDataSource,
-      @Remote QuestionDataSource remoteDataSource) {
+  @VisibleForTesting List<Movie> caches;
+
+  @Inject public MoviesRepository(@Local MoviesDataSource localDataSource,
+                                  @Remote MoviesDataSource remoteDataSource) {
     this.localDataSource = localDataSource;
     this.remoteDataSource = remoteDataSource;
 
     caches = new ArrayList<>();
   }
 
-  @Override public Flowable<List<Question>> loadQuestions(boolean forceRemote) {
+  @Override public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote) {
     if (forceRemote) {
       return refreshData();
     } else {
@@ -31,7 +35,7 @@ public class QuestionRepository implements QuestionDataSource {
         return Flowable.just(caches);
       } else {
         // else return data from local storage
-        return localDataSource.loadQuestions(false)
+        return localDataSource.loadPopularMovies(false)
             .take(1)
             .flatMap(Flowable::fromIterable)
             .doOnNext(question -> caches.add(question))
@@ -50,29 +54,29 @@ public class QuestionRepository implements QuestionDataSource {
    *
    * @return the Flowable of newly fetched data.
    */
-  Flowable<List<Question>> refreshData() {
-    return remoteDataSource.loadQuestions(true).doOnNext(list -> {
+  Flowable<List<Movie>> refreshData() {
+    return remoteDataSource.loadPopularMovies(true).doOnNext(list -> {
       // Clear cache
       caches.clear();
       // Clear data in local storage
       localDataSource.clearData();
     }).flatMap(Flowable::fromIterable).doOnNext(question -> {
       caches.add(question);
-      localDataSource.addQuestion(question);
+      localDataSource.addMovie(question);
     }).toList().toFlowable();
   }
 
   /**
    * Loads a question by its question id.
    *
-   * @param questionId question's id.
+   * @param movieId question's id.
    * @return a corresponding question from cache.
    */
-  public Flowable<Question> getQuestion(long questionId) {
-    return Flowable.fromIterable(caches).filter(question -> question.getId() == questionId);
+  public Flowable<Movie> getMovie(long movieId) {
+    return Flowable.fromIterable(caches).filter(movie -> movie.getId() == movieId);
   }
 
-  @Override public void addQuestion(Question question) {
+  @Override public void addMovie(Movie question) {
     //Currently, we do not need this.
     throw new UnsupportedOperationException("Unsupported operation");
   }

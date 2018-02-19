@@ -7,9 +7,10 @@ public class Config {
   public static final String QUESTION_TABLE_NAME = "question";
   public static final String DATABASE_NAME = "themoviedb.db";
   public static final String MOVIE_TABLE_NAME = "movie";
+    public static final String API_KEY = "6177565665ecbc9cc6b09fbe70f78fec";
 
 
-  public class Params {
+    public class Params {
 
     public static final String adult = "adult";
     public static final String page = "page";

@@ -1,18 +1,22 @@
-package com.yakub.themoviedbsample.ui.questions;
+package com.yakub.themoviedbsample.ui.movies;
 
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
-import com.yakub.themoviedbsample.data.model.Question;
-import com.yakub.themoviedbsample.data.repository.QuestionRepository;
+
+import com.yakub.themoviedbsample.data.model.Movie;
+import com.yakub.themoviedbsample.data.repository.MoviesRepository;
 import com.yakub.themoviedbsample.util.schedulers.RunOn;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
 import io.reactivex.Flowable;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import java.util.List;
-import javax.inject.Inject;
 
 import static com.yakub.themoviedbsample.util.schedulers.SchedulerType.IO;
 import static com.yakub.themoviedbsample.util.schedulers.SchedulerType.UI;
@@ -20,19 +24,19 @@ import static com.yakub.themoviedbsample.util.schedulers.SchedulerType.UI;
 /**
  * A presenter with life-cycle aware.
  */
-public class QuestionsPresenter implements QuestionsContract.Presenter, LifecycleObserver {
+public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObserver {
 
-  private QuestionRepository repository;
+  private MoviesRepository repository;
 
-  private QuestionsContract.View view;
+  private MoviesContract.View view;
 
   private Scheduler ioScheduler;
   private Scheduler uiScheduler;
 
   private CompositeDisposable disposeBag;
 
-  @Inject public QuestionsPresenter(QuestionRepository repository, QuestionsContract.View view,
-      @RunOn(IO) Scheduler ioScheduler, @RunOn(UI) Scheduler uiScheduler) {
+  @Inject public MoviesPresenter(MoviesRepository repository, MoviesContract.View view,
+                                 @RunOn(IO) Scheduler ioScheduler, @RunOn(UI) Scheduler uiScheduler) {
     this.repository = repository;
     this.view = view;
     this.ioScheduler = ioScheduler;
@@ -47,7 +51,7 @@ public class QuestionsPresenter implements QuestionsContract.Presenter, Lifecycl
   }
 
   @Override @OnLifecycleEvent(Lifecycle.Event.ON_RESUME) public void onAttach() {
-    loadQuestions(false);
+    loadPopularMovies( false);
   }
 
   @Override @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE) public void onDetach() {
@@ -55,33 +59,34 @@ public class QuestionsPresenter implements QuestionsContract.Presenter, Lifecycl
     disposeBag.clear();
   }
 
-  @Override public void loadQuestions(boolean onlineRequired) {
+
+  @Override public void loadPopularMovies(boolean onlineRequired) {
     // Clear old data on view
-    view.clearQuestions();
+    view.clearMovies();
 
     // Load new one and populate it into view
-    Disposable disposable = repository.loadQuestions(onlineRequired)
+    Disposable disposable = repository.loadPopularMovies(onlineRequired)
         .subscribeOn(ioScheduler)
         .observeOn(uiScheduler)
         .subscribe(this::handleReturnedData, this::handleError, () -> view.stopLoadingIndicator());
     disposeBag.add(disposable);
   }
 
-  @Override public void getQuestion(long questionId) {
-    Disposable disposable = repository.getQuestion(questionId)
-        .filter(question -> question != null)
+  @Override public void getMovie(long movieId) {
+    Disposable disposable = repository.getMovie(movieId)
+        .filter(movie -> movie != null)
         .subscribeOn(ioScheduler)
         .observeOn(uiScheduler)
-        .subscribe(question -> view.showQuestionDetail(question));
+        .subscribe(movie -> view.showMovieDetail(movie));
     disposeBag.add(disposable);
   }
 
-  @Override public void search(final String questionTitle) {
+  @Override public void search(final String movieTitle) {
     // Load new one and populate it into view
-    Disposable disposable = repository.loadQuestions(false)
+    Disposable disposable = repository.loadPopularMovies(false)
         .flatMap(Flowable::fromIterable)
-        .filter(question -> question.getTitle() != null)
-        .filter(question -> question.getTitle().toLowerCase().contains(questionTitle.toLowerCase()))
+        .filter(movie -> movie.getTitle() != null)
+        .filter(movie -> movie.getTitle().toLowerCase().contains(movieTitle.toLowerCase()))
         .toList()
         .toFlowable()
         .subscribeOn(ioScheduler)
@@ -89,12 +94,12 @@ public class QuestionsPresenter implements QuestionsContract.Presenter, Lifecycl
         .subscribe(questions -> {
           if (questions.isEmpty()) {
             // Clear old data in view
-            view.clearQuestions();
+            view.clearMovies();
             // Show notification
             view.showEmptySearchResult();
           } else {
             // Update filtered data
-            view.showQuestions(questions);
+            view.showMovies(questions);
           }
         });
 
@@ -104,10 +109,10 @@ public class QuestionsPresenter implements QuestionsContract.Presenter, Lifecycl
   /**
    * Updates view after loading data is completed successfully.
    */
-  private void handleReturnedData(List<Question> list) {
+  private void handleReturnedData(List<Movie> list) {
     view.stopLoadingIndicator();
     if (list != null && !list.isEmpty()) {
-      view.showQuestions(list);
+      view.showMovies(list);
     } else {
       view.showNoDataMessage();
     }

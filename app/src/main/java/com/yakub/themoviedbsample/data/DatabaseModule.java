@@ -2,12 +2,15 @@ package com.yakub.themoviedbsample.data;
 
 import android.arch.persistence.room.Room;
 import android.content.Context;
-import com.yakub.themoviedbsample.data.database.QuestionDao;
-import com.yakub.themoviedbsample.data.database.StackOverflowDb;
-import dagger.Module;
-import dagger.Provides;
+
+import com.yakub.themoviedbsample.data.database.MovieDao;
+import com.yakub.themoviedbsample.data.database.TheMovieDb;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
 
 @Module
 public class DatabaseModule {
@@ -21,13 +24,13 @@ public class DatabaseModule {
 
   @Provides
   @Singleton
-  StackOverflowDb provideStackOverflowDao(Context context, @Named(DATABASE) String databaseName) {
-    return Room.databaseBuilder(context, StackOverflowDb.class, databaseName).build();
+  TheMovieDb provideStackOverflowDao(Context context, @Named(DATABASE) String databaseName) {
+    return Room.databaseBuilder(context, TheMovieDb.class, databaseName).build();
   }
 
   @Provides
   @Singleton
-  QuestionDao provideQuestionDao(StackOverflowDb stackOverflowDb) {
-    return stackOverflowDb.questionDao();
+  MovieDao provideQuestionDao(TheMovieDb theMovieDb) {
+    return theMovieDb.movieDao();
   }
 }

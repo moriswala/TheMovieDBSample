@@ -20,7 +20,7 @@ import io.reactivex.Flowable;
 @Dao
 public interface MovieDao {
     @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME)
-    Flowable<List<Movie>> getAllQuestions();
+    Flowable<List<Movie>> getAllMovies();
 
     @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " WHERE id == :id")
     Flowable<Movie> getQuestionById(int id);

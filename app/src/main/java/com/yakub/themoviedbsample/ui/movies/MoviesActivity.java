@@ -1,7 +1,6 @@
-package com.yakub.themoviedbsample.ui.questions;
+package com.yakub.themoviedbsample.ui.movies;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,52 +11,57 @@ import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.yakub.themoviedbsample.R;
-import com.yakub.themoviedbsample.data.model.Question;
+import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.ui.base.BaseActivity;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 
-public class QuestionsActivity extends BaseActivity implements QuestionsContract.View {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class MoviesActivity extends BaseActivity implements MoviesContract.View {
   @BindView(R.id.recycler_question) RecyclerView questionRecyclerView;
   @BindView(R.id.refresh) SwipeRefreshLayout refreshLayout;
   @BindView(R.id.text_notification) TextView notificationText;
 
-  private QuestionAdapter adapter;
-  @Inject QuestionsPresenter presenter;
+  private MoviesAdapter adapter;
+  @Inject
+  MoviesPresenter presenter;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
     initializePresenter();
-    setTitle(getString(R.string.android_tag));
+    setTitle(getString(R.string.app_name));
     setupWidgets();
   }
 
   private void initializePresenter() {
-    DaggerQuestionsComponent.builder()
-        .questionsPresenterModule(new QuestionsPresenterModule(this))
-        .questionRepositoryComponent(getQuestionRepositoryComponent())
+    DaggerMoviesComponent.builder()
+        .moviesPresenterModule(new MoviesPresenterModule(this))
+        .moviesRepositoryComponent(getQuestionRepositoryComponent())
         .build()
         .inject(this);
   }
 
   private void setupWidgets() {
     // Setup recycler view
-    adapter = new QuestionAdapter(new ArrayList<>());
+    adapter = new MoviesAdapter(new ArrayList<>());
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
     questionRecyclerView.setLayoutManager(layoutManager);
     questionRecyclerView.setAdapter(adapter);
     questionRecyclerView.setItemAnimator(new DefaultItemAnimator());
     adapter.setOnItemClickListener(
-        (view, position) -> presenter.getQuestion(adapter.getItem(position).getId()));
+        (view, position) -> presenter.getMovie(adapter.getItem(position).getId()));
 
     // Refresh layout
-    refreshLayout.setOnRefreshListener(() -> presenter.loadQuestions(true));
+    refreshLayout.setOnRefreshListener(() -> presenter.loadPopularMovies(true));
     // Set notification text visible first
     notificationText.setVisibility(View.GONE);
   }
@@ -84,9 +88,9 @@ public class QuestionsActivity extends BaseActivity implements QuestionsContract
     return true;
   }
 
-  @Override public void showQuestions(List<Question> questions) {
+  @Override public void showMovies(List<Movie> movies) {
     notificationText.setVisibility(View.GONE);
-    adapter.replaceData(questions);
+    adapter.replaceData(movies);
   }
 
   @Override public void showNoDataMessage() {
@@ -97,7 +101,7 @@ public class QuestionsActivity extends BaseActivity implements QuestionsContract
     showNotification(error);
   }
 
-  @Override public void clearQuestions() {
+  @Override public void clearMovies() {
     adapter.clearData();
   }
 
@@ -107,9 +111,9 @@ public class QuestionsActivity extends BaseActivity implements QuestionsContract
     }
   }
 
-  @Override public void showQuestionDetail(Question question) {
+  @Override public void showMovieDetail(Movie movie) {
     Intent intent = new Intent(Intent.ACTION_VIEW);
-    intent.setData(Uri.parse(question.getLink()));
+//    intent.setData(Uri.parse(movie.get));
     startActivity(intent);
   }
 
