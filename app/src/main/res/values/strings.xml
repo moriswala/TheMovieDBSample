@@ -5,4 +5,7 @@
   <string name="search">Search</string>
   <string name="search_hint">Enter movie title</string>
   <string name="msg_empty_search_result">No result found.</string>
+    <string name="title_popular">Popular</string>
+  <string name="title_top">Top Rated</string>
+  <string name="title_search">Search</string>
 </resources>
