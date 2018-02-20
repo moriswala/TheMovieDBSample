@@ -113,7 +113,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
     Disposable disposable = repository.getMovie(onlineRequired, movieId)
         .subscribeOn(ioScheduler)
         .observeOn(uiScheduler)
-        .subscribe(movie -> view.showMovieDetail(movie));
+        .subscribe(this::handleReturnedData, this::handleError, () -> view.stopLoadingIndicator());
     disposeBag.add(disposable);
   }
 
@@ -151,6 +151,18 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
       view.showMovies(list);
     } else {
       view.showNoDataMessage();
+    }
+  }
+
+  /**
+   * Updates view after loading data is completed successfully.
+   */
+  private void handleReturnedData(Movie movie) {
+    view.stopLoadingIndicator();
+    if (movie != null) {
+      view.showMovieDetail(movie);
+    } else {
+      view.showEmptySearchResult();
     }
   }
 
