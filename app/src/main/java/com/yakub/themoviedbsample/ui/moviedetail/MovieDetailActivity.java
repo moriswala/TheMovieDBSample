@@ -12,6 +12,7 @@ import com.yakub.themoviedbsample.R;
 import com.yakub.themoviedbsample.data.Config;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.ui.base.BaseActivity;
+import com.yakub.themoviedbsample.util.DateTimeUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,7 +59,8 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     textTitle.setText(movie.getTitle());
     textTagline.setText(movie.getTagLine());
     rattingBar.setRating(movie.getAvgVote()/2);
-    textReleaseDate.setText(getString(R.string.released_on)+movie.getReleaseDate());
+    String formattedDate = DateTimeUtils.formatDate(DateTimeUtils.parseDate(movie.getReleaseDate()));
+    textReleaseDate.setText(getString(R.string.released_on)+formattedDate);
     textOverview.setText(getString(R.string.story)+movie.getOverview());
     Uri uri = Uri.parse("https://image.tmdb.org/t/p/w500/"+movie.getPosterPath());
     imgCoverImage.setImageURI(uri);

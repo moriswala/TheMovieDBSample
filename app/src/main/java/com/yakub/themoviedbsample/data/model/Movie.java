@@ -92,7 +92,7 @@ public class Movie implements Serializable{
     private float avgVote;
 
     @SerializedName(Config.Params.vote_count)
-    private int voteCount;
+    private long voteCount;
 
     public ArrayList<Integer> getGenerIds() {
         return generIds;
@@ -194,7 +194,7 @@ public class Movie implements Serializable{
         return avgVote;
     }
 
-    public int getVoteCount() {
+    public long getVoteCount() {
         return voteCount;
     }
 
@@ -282,7 +282,7 @@ public class Movie implements Serializable{
         this.avgVote = avgVote;
     }
 
-    public void setVoteCount(int voteCount) {
+    public void setVoteCount(long voteCount) {
         this.voteCount = voteCount;
     }
 }

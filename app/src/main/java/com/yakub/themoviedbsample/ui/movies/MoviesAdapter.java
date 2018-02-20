@@ -6,12 +6,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.yakub.themoviedbsample.R;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.ui.base.BaseRecyclerViewAdapter;
+import com.yakub.themoviedbsample.util.NumberUtils;
 
 import java.security.InvalidParameterException;
 import java.util.List;
@@ -30,6 +32,8 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolde
   class MovieViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.imgCoverImage) SimpleDraweeView imgCoverImage;
     @BindView(R.id.text_title) TextView titleText;
+    @BindView(R.id.rattingBar) RatingBar rattingBar;
+    @BindView(R.id.textVoteCount) TextView textVoteCount;
 //    @BindView(R.id.text_user) TextView userText;
 //    @BindView(R.id.text_created_time) TextView createdTimeText;
 //    @BindView(R.id.image_profile) ImageView profileImage;
@@ -45,44 +49,44 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolde
   public MoviesAdapter(@NonNull List<Movie> questions, @NonNull RecyclerView recyclerView) {
     this.moviesList = questions;
     this.mRecyclerView = recyclerView;
-    this.mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-    {
-      @Override
-      public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-      {
-        super.onScrolled(recyclerView, dx, dy);
-
-        totalItemCount = recyclerView.getLayoutManager().getItemCount();
-        int lastVisibleItem = ((GridLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-//        lastVisibleItem = getLastVisibleItem(lastItemsArray);
-
-        if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold))
-        {
-          if (onLoadMoreListener != null)
-          {
-            onLoadMoreListener.onLoadMore();
-          }
-          isLoading = true;
-        }
-      }
-
-      public int getLastVisibleItem(int[] lastVisibleItemPositions)
-      {
-        int maxSize = 0;
-        for (int i = 0; i < lastVisibleItemPositions.length; i++)
-        {
-          if (i == 0)
-          {
-            maxSize = lastVisibleItemPositions[i];
-          }
-          else if (lastVisibleItemPositions[i] > maxSize)
-          {
-            maxSize = lastVisibleItemPositions[i];
-          }
-        }
-        return maxSize;
-      }
-    });
+//    this.mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+//    {
+//      @Override
+//      public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+//      {
+//        super.onScrolled(recyclerView, dx, dy);
+//
+//        totalItemCount = recyclerView.getLayoutManager().getItemCount();
+//        int lastVisibleItem = ((GridLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+////        lastVisibleItem = getLastVisibleItem(lastItemsArray);
+//
+//        if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold))
+//        {
+//          if (onLoadMoreListener != null)
+//          {
+//            onLoadMoreListener.onLoadMore();
+//          }
+//          isLoading = true;
+//        }
+//      }
+//
+//      public int getLastVisibleItem(int[] lastVisibleItemPositions)
+//      {
+//        int maxSize = 0;
+//        for (int i = 0; i < lastVisibleItemPositions.length; i++)
+//        {
+//          if (i == 0)
+//          {
+//            maxSize = lastVisibleItemPositions[i];
+//          }
+//          else if (lastVisibleItemPositions[i] > maxSize)
+//          {
+//            maxSize = lastVisibleItemPositions[i];
+//          }
+//        }
+//        return maxSize;
+//      }
+//    });
   }
 
   public void setLoaded() {
@@ -100,11 +104,13 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolde
     MovieViewHolder vh = (MovieViewHolder) viewHolder; //safe cast
     Movie movie = moviesList.get(i);
     vh.titleText.setText(movie.getTitle());
+    vh.rattingBar.setRating(movie.getAvgVote()/2);
+    vh.textVoteCount.setText(NumberUtils.formatNumberInKMB(movie.getVoteCount())+" ");
 //    vh.userText.setText(movie.getOverview());
 //    vh.createdTimeText.setText(DateTimeUtils.formatRelativeTime(movie.getReleaseDate()));
 //    Glide.with(vh.profileImage).load(movie.getBackdropPath()).into(vh.profileImage);
     Uri uri = Uri.parse("https://image.tmdb.org/t/p/w300/"+movie.getBackdropPath());
-//    vh.imgCoverImage.setImageURI(uri);
+    vh.imgCoverImage.setImageURI(uri);
   }
 
   @Override public int getItemCount() {

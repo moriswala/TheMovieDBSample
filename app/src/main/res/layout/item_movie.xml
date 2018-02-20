@@ -9,10 +9,6 @@
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
     android:foreground="?android:attr/selectableItemBackground"
-    android:padding="@dimen/padding_normal"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
     card_view:cardCornerRadius="2dp"
     card_view:cardPreventCornerOverlap="true">
   <RelativeLayout
@@ -22,7 +18,7 @@
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/imgCoverImage"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
+        android:layout_height="200dp"
         fresco:placeholderImage="@drawable/place_holder"
         />
     <TextView
@@ -33,10 +29,42 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_below="@+id/imgCoverImage"
-        android:lines="1"
+        android:lines="2"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/blue"
         />
+
+    <RelativeLayout
+        android:id="@+id/layoutRattings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_title"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_alignParentBottom="true"
+
+        >
+
+      <RatingBar
+          android:id="@+id/rattingBar"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="?android:attr/ratingBarStyleSmall"
+          android:stepSize=".1"
+          android:numStars="5"
+          />
+      <TextView
+          android:id="@+id/textVoteCount"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentEnd="true"
+          android:layout_alignParentRight="true"
+          android:drawableEnd="@drawable/ic_thumb_up"
+          android:drawableRight="@drawable/ic_thumb_up"
+          android:textAppearance="?android:textAppearanceSmall"
+          android:textColor="@color/blue" />
+    </RelativeLayout>
     <!--<TextView
         android:id="@+id/text_created_time"
         android:layout_width="wrap_content"
