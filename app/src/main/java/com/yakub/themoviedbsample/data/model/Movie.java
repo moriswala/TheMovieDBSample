@@ -24,8 +24,8 @@ public class Movie implements Serializable{
     @SerializedName(Config.Params.backdrop_path)
     private String backdropPath;
 
-    @SerializedName(Config.Params.belongs_to_collection)
-    private String belongsToCollection;
+//    @SerializedName(Config.Params.belongs_to_collection)
+//    private String belongsToCollection;
 
     @SerializedName(Config.Params.budget)
     private long budget;
@@ -106,9 +106,9 @@ public class Movie implements Serializable{
         return backdropPath;
     }
 
-    public String getBelongsToCollection() {
-        return belongsToCollection;
-    }
+//    public String getBelongsToCollection() {
+//        return belongsToCollection;
+//    }
 
     public long getBudget() {
         return budget;
@@ -214,9 +214,9 @@ public class Movie implements Serializable{
         this.backdropPath = backdropPath;
     }
 
-    public void setBelongsToCollection(String belongsToCollection) {
-        this.belongsToCollection = belongsToCollection;
-    }
+//    public void setBelongsToCollection(String belongsToCollection) {
+//        this.belongsToCollection = belongsToCollection;
+//    }
 
     public void setBudget(long budget) {
         this.budget = budget;

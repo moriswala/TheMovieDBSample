@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -18,6 +19,10 @@ import butterknife.ButterKnife;
 public class MovieDetailActivity extends BaseActivity implements MovieDetailContract.View {
   @BindView(R.id.imgCoverImage) SimpleDraweeView imgCoverImage;
   @BindView(R.id.text_overview) TextView textOverview;
+  @BindView(R.id.text_title) TextView textTitle;
+  @BindView(R.id.text_tagline) TextView textTagline;
+  @BindView(R.id.textReleaseDate) TextView textReleaseDate;
+  @BindView(R.id.rattingBar) RatingBar rattingBar;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -26,7 +31,7 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     initializePresenter();
     Movie movie = getIntentParams();
     if(movie!=null) {
-      setTitle(movie.getTitle());
+      setTitle(getString(R.string.details));
 //      getActionBar().setDisplayHomeAsUpEnabled(true);
       setupWidgets(movie);
     }
@@ -50,7 +55,11 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
 
   private void setupWidgets(Movie movie) {
 
-    textOverview.setText(movie.getOverview());
+    textTitle.setText(movie.getTitle());
+    textTagline.setText(movie.getTagLine());
+    rattingBar.setRating(movie.getAvgVote()/2);
+    textReleaseDate.setText(getString(R.string.released_on)+movie.getReleaseDate());
+    textOverview.setText(getString(R.string.story)+movie.getOverview());
     Uri uri = Uri.parse("https://image.tmdb.org/t/p/w500/"+movie.getPosterPath());
     imgCoverImage.setImageURI(uri);
   }

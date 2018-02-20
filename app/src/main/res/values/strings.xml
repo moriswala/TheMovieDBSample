@@ -10,4 +10,8 @@
   <string name="title_search">Search</string>
     <string name="no_details_found">No details found.</string>
     <string name="bookmark">Star</string>
+    <string name="details">Details</string>
+    <string name="title">Title :</string>
+  <string name="released_on">Released on :</string>
+  <string name="story">Story :</string>
 </resources>

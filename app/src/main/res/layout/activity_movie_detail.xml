@@ -20,13 +20,14 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/imgCoverImage"
             android:layout_marginEnd="8dp"
+            android:maxLines="2"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:textAppearance="?android:textAppearanceLarge"
             android:textColor="@color/blue" />
 
         <TextView
-            android:id="@+id/text_overview"
+            android:id="@+id/text_tagline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text_title"
@@ -34,6 +35,43 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/blue" />
+            android:textColor="@android:color/darker_gray" />
+
+        <RelativeLayout
+            android:id="@+id/layoutRattings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_tagline"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            >
+            <TextView
+                android:id="@+id/textReleaseDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textColor="@color/blue" />
+            <RatingBar
+                android:id="@+id/rattingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                style="?android:attr/ratingBarStyleSmall"
+                android:stepSize=".1"
+                android:numStars="5"
+                />
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/text_overview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutRattings"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="@android:color/darker_gray" />
     </RelativeLayout>
 </ScrollView>
