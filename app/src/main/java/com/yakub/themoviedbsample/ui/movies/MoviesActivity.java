@@ -10,19 +10,20 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.yakub.themoviedbsample.R;
+import com.yakub.themoviedbsample.data.Config;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.ui.base.BaseActivity;
+import com.yakub.themoviedbsample.ui.base.BaseRecyclerViewAdapter;
+import com.yakub.themoviedbsample.ui.moviedetail.MovieDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,8 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   private DrawerLayout mDrawerLayout;
   private int selectedOptionItem;
   private SearchView searchView;
+  private int page = 1;
+  private int totalMovies = 1000;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -56,7 +59,7 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   private void initializePresenter() {
     DaggerMoviesComponent.builder()
         .moviesPresenterModule(new MoviesPresenterModule(this))
-        .moviesRepositoryComponent(getQuestionRepositoryComponent())
+        .moviesRepositoryComponent(getMovieRepositoryComponent())
         .build()
         .inject(this);
   }
@@ -64,7 +67,7 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   private void setupWidgets() {
     // Setup recycler view
     setupDrawer();
-    adapter = new MoviesAdapter(new ArrayList<>());
+
 //    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 //    mRecyclerView.setLayoutManager(layoutManager);
 
@@ -72,17 +75,31 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     mRecyclerView.setLayoutManager(mLayoutManager);
     mRecyclerView.setHasFixedSize(true);
     mRecyclerView.setNestedScrollingEnabled(false);
-
+    adapter = new MoviesAdapter(new ArrayList<>(), mRecyclerView);
     mRecyclerView.setAdapter(adapter);
     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
     adapter.setOnItemClickListener(
-        (view, position) -> presenter.getMovie(adapter.getItem(position).getId()));
+        (view, position) -> presenter.getMovie(true, adapter.getItem(position).getId()));
+    adapter.setOnLoadMoreListener(new BaseRecyclerViewAdapter.OnLoadMoreListener()
+    {
+      @Override
+      public void onLoadMore()
+      {
+        if (adapter.getItemCount() < totalMovies)
+        {
+//                    int nextPage = homeProductsResponce.getOutput().getNavigation().getPage()+1;
+          page = page+1;
+          presenter.loadPopularMovies(true, page);
+        }
+
+      }
+    });
 
     // Refresh layout
     refreshLayout.setOnRefreshListener(() -> {
       switch (selectedOptionItem) {
         case 0:
-          presenter.loadPopularMovies(true);
+          presenter.loadPopularMovies(true, page);
           break;
         case 1:
           presenter.loadTopRatedMovies(true);
@@ -143,11 +160,12 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
                 @Override
                 public boolean onNavigationItemSelected(MenuItem menuItem) {
                   selectedOptionItem = menuItem.getItemId();
+                  page = 1;
                   switch (menuItem.getItemId()) {
                     case R.id.popular:
                       // Do nothing, we're already on that screen
                       setTitle(R.string.title_popular);
-                      presenter.loadPopularMovies(true);
+                      presenter.loadPopularMovies(true, page);
                       break;
                     case R.id.top:
                       setTitle(R.string.title_top);
@@ -172,7 +190,7 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.questions, menu);
+    getMenuInflater().inflate(R.menu.main_menu, menu);
 
     // Setup search widget in action bar
     searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
@@ -207,7 +225,7 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
               presenter.searchMovie(true, searchText);
 
             if(searchText==null || searchText.length()==0)
-              presenter.loadPopularMovies(true);
+              presenter.loadPopularMovies(true, page);
           }
         };
         handler.postDelayed(runnable, 1000);
@@ -220,8 +238,19 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   }
 
   @Override public void showMovies(List<Movie> movies) {
+    adapter.setLoaded();
+    if(page==1) {
+      notificationText.setVisibility(View.GONE);
+      adapter.replaceData(movies);
+    }else{
+      notificationText.setVisibility(View.GONE);
+      adapter.appendData(movies);
+    }
+  }
+
+  @Override public void appendMovies(List<Movie> movies) {
     notificationText.setVisibility(View.GONE);
-    adapter.replaceData(movies);
+    adapter.appendData(movies);
   }
 
   @Override public void showNoDataMessage() {
@@ -243,9 +272,14 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
   }
 
   @Override public void showMovieDetail(Movie movie) {
-    Intent intent = new Intent(Intent.ACTION_VIEW);
-//    intent.setData(Uri.parse(movie.get));
-    startActivity(intent);
+    if(movie!=null){
+      Intent intent = new Intent(this, MovieDetailActivity.class);
+      intent.putExtra(Config.Extra.MOVIE, movie);
+      startActivity(intent);
+    }else{
+      showErrorMessage(getString(R.string.no_details_found));
+    }
+
   }
 
   @Override public void showEmptySearchResult() {

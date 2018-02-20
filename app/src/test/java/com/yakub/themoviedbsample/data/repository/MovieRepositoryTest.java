@@ -2,16 +2,19 @@ package com.yakub.themoviedbsample.data.repository;
 
 import com.yakub.themoviedbsample.data.model.Movie;
 
-import io.reactivex.Flowable;
-import io.reactivex.subscribers.TestSubscriber;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.hamcrest.Matchers.*;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
+
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -61,32 +64,32 @@ public class MovieRepositoryTest {
   @Test public void loadQuestions_ShouldReturnFromLocal_IfCacheIsNotAvailable() {
     // Given
     // No cache
-    doReturn(Flowable.just(questions)).when(localDataSource).loadPopularMovies(false);
-    doReturn(Flowable.just(questions)).when(remoteDataSource).loadPopularMovies(true);
+    doReturn(Flowable.just(questions)).when(localDataSource).loadPopularMovies(false, 1);
+    doReturn(Flowable.just(questions)).when(remoteDataSource).loadPopularMovies(true, 1);
 
     // When
     repository.loadPopularMovies(false).subscribe(questionsTestSubscriber);
 
     // Then
     // Loads from local storage
-    verify(localDataSource).loadPopularMovies(false);
+    verify(localDataSource).loadPopularMovies(false, 1);
     // Will load from remote source if there is no local data available
-    verify(remoteDataSource).loadPopularMovies(true);
+    verify(remoteDataSource).loadPopularMovies(true, 1);
 
     questionsTestSubscriber.assertValue(questions);
   }
 
   @Test public void loadQuestions_ShouldReturnFromRemote_WhenItIsRequired() {
     // Given
-    doReturn(Flowable.just(questions)).when(remoteDataSource).loadPopularMovies(true);
+    doReturn(Flowable.just(questions)).when(remoteDataSource).loadPopularMovies(true, 1);
 
     // When
     repository.loadPopularMovies(true).subscribe(questionsTestSubscriber);
 
     // Then
     // Load from remote not from local storage
-    verify(remoteDataSource).loadPopularMovies(true);
-    verify(localDataSource, never()).loadPopularMovies(true);
+    verify(remoteDataSource).loadPopularMovies(true,1);
+    verify(localDataSource, never()).loadPopularMovies(true,1);
     // Cache and local storage data are clear and are filled with new data
     verify(localDataSource).clearData();
     assertEquals(repository.caches, questions);
@@ -106,7 +109,7 @@ public class MovieRepositoryTest {
     TestSubscriber<Movie> subscriber = new TestSubscriber<>();
 
     // When
-    repository.getMovie(1).subscribe(subscriber);
+    repository.getMovie(true, 1).subscribe(subscriber);
 
     // Then
     // No interaction with local storage or remote source
@@ -118,7 +121,7 @@ public class MovieRepositoryTest {
 
   @Test public void refreshData_ShouldClearOldDataFromLocal() {
     // Given
-    given(remoteDataSource.loadPopularMovies(true)).willReturn(Flowable.just(questions));
+    given(remoteDataSource.loadPopularMovies(true,1)).willReturn(Flowable.just(questions));
 
     // When
     repository.refreshPopularMoviesData().subscribe(questionsTestSubscriber);
@@ -129,7 +132,7 @@ public class MovieRepositoryTest {
 
   @Test public void refreshData_ShouldAddNewDataToCache() {
     // Given
-    given(remoteDataSource.loadPopularMovies(true)).willReturn(Flowable.just(questions));
+    given(remoteDataSource.loadPopularMovies(true,1)).willReturn(Flowable.just(questions));
 
     // When
     repository.refreshPopularMoviesData().subscribe(questionsTestSubscriber);
@@ -140,7 +143,7 @@ public class MovieRepositoryTest {
 
   @Test public void refreshData_ShouldAddNewDataToLocal() {
     // Given
-    given(remoteDataSource.loadPopularMovies(true)).willReturn(Flowable.just(questions));
+    given(remoteDataSource.loadPopularMovies(true,1)).willReturn(Flowable.just(questions));
 
     // When
     repository.refreshPopularMoviesData().subscribe(questionsTestSubscriber);

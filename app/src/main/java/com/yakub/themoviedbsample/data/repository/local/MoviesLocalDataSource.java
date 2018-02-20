@@ -20,8 +20,8 @@ public class MoviesLocalDataSource implements MoviesDataSource {
   }
 
   @Override
-  public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote) {
-    return movieDao.getAllPopularMovies();
+  public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote, int page) {
+    return movieDao.getAllPopularMovies(1000);
   }
 
   @Override
@@ -44,5 +44,10 @@ public class MoviesLocalDataSource implements MoviesDataSource {
   public void clearData() {
     // Clear old data
     movieDao.deleteAll();
+  }
+
+  @Override
+  public Flowable<Movie> getMovie(boolean forceRemote, long movieId) {
+    return movieDao.getMovieById(movieId);
   }
 }

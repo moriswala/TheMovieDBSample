@@ -36,7 +36,7 @@ public class MovieLocalDataSourceTest {
     given(movieDao.getAllMovies()).willReturn(Flowable.just(movies));
 
     // When
-    localDataSource.loadPopularMovies(false).subscribe(subscriber);
+    localDataSource.loadPopularMovies(false, 1).subscribe(subscriber);
 
     // Then
     then(movieDao).should().getAllMovies();

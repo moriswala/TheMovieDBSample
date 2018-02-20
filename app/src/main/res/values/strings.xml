@@ -8,4 +8,6 @@
     <string name="title_popular">Popular</string>
   <string name="title_top">Top Rated</string>
   <string name="title_search">Search</string>
+    <string name="no_details_found">No details found.</string>
+    <string name="bookmark">Star</string>
 </resources>

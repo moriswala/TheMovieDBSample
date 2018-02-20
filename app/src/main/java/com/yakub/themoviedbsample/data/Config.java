@@ -47,4 +47,11 @@ public class Config {
       public static final String query = "query";
       public static final String API_KEY = "api_key";
     }
+    
+    
+    //EXTRA KEYS
+    public class Extra {
+
+      public static final String MOVIE = "MOVIE";
+    }
 }

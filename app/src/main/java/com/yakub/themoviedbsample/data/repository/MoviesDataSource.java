@@ -7,7 +7,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 
 public interface MoviesDataSource {
-  Flowable<List<Movie>> loadPopularMovies(boolean forceRemote);
+  Flowable<List<Movie>> loadPopularMovies(boolean forceRemote, int page);
 
     Flowable<List<Movie>> loadTopRatedMovies(boolean forceRemote);
 
@@ -16,4 +16,6 @@ public interface MoviesDataSource {
     void addMovie(Movie question);
 
   void clearData();
+
+  Flowable<Movie> getMovie(boolean forceRemote, long movieId);
 }

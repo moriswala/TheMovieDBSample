@@ -33,14 +33,14 @@ public class MovieRemoteDataSourceTest {
   }
 
   @Test
-  public void loadQuestions_ShouldReturnFromRemoteService() {
+  public void loadQuestions_ShouldReturnFromRemoteService(int page) {
     MovieListResponce movieListResponce = new MovieListResponce();
     TestSubscriber<List<Movie>> subscriber = new TestSubscriber<>();
-    given(movieService.loadPopularMovies(Config.API_KEY)).willReturn(Flowable.just(movieListResponce));
+    given(movieService.loadPopularMovies(Config.API_KEY, page)).willReturn(Flowable.just(movieListResponce));
 
-    remoteDataSource.loadPopularMovies(anyBoolean()).subscribe(subscriber);
+    remoteDataSource.loadPopularMovies(anyBoolean(), page).subscribe(subscriber);
 
-    then(movieService).should().loadPopularMovies(Config.API_KEY);
+    then(movieService).should().loadPopularMovies(Config.API_KEY, page);
   }
 
   @Test(expected = UnsupportedOperationException.class)

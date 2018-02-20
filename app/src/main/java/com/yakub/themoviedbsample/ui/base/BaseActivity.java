@@ -8,7 +8,7 @@ import com.yakub.themoviedbsample.data.MoviesRepositoryComponent;
 public class BaseActivity extends AppCompatActivity {
   private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
-  protected MoviesRepositoryComponent getQuestionRepositoryComponent() {
+  protected MoviesRepositoryComponent getMovieRepositoryComponent() {
     return ((AndroidApplication) getApplication()).getMoviesRepositoryComponent();
   }
 

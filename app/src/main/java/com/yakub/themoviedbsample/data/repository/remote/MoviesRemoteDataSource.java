@@ -21,8 +21,8 @@ public class MoviesRemoteDataSource implements MoviesDataSource {
   }
 
   @Override
-  public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote) {
-    return movieService.loadPopularMovies(Config.API_KEY).map(MovieListResponce::getMovies);
+  public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote, int page) {
+    return movieService.loadPopularMovies(Config.API_KEY, page).map(MovieListResponce::getMovies);
   }
 
   @Override
@@ -36,6 +36,11 @@ public class MoviesRemoteDataSource implements MoviesDataSource {
   }
 
   @Override
+  public Flowable<Movie> getMovie(boolean forceRemote, long movieId) {
+    return movieService.getMovie(String.valueOf(movieId), Config.API_KEY);
+  }
+
+  @Override
   public void addMovie(Movie question) {
     //Currently, we do not need this for remote source.
     throw new UnsupportedOperationException("Unsupported operation");
@@ -46,4 +51,6 @@ public class MoviesRemoteDataSource implements MoviesDataSource {
     //Currently, we do not need this for remote source.
     throw new UnsupportedOperationException("Unsupported operation");
   }
+
+
 }

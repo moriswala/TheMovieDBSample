@@ -22,7 +22,7 @@ public interface MovieDao {
     Flowable<List<Movie>> getAllMovies();
 
     @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " WHERE id == :id")
-    Flowable<Movie> getMovieById(int id);
+    Flowable<Movie> getMovieById(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Movie movie);
@@ -30,12 +30,13 @@ public interface MovieDao {
     @Query("DELETE FROM " + Config.MOVIE_TABLE_NAME)
     void deleteAll();
 
-    @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " ORDER BY "+Config.Params.popularity + " DESC")
-    Flowable<List<Movie>> getAllPopularMovies();
+    @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " ORDER BY "+Config.Params.popularity + " DESC LIMIT :page")
+    Flowable<List<Movie>> getAllPopularMovies(int page);
 
     @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " ORDER BY avgVote"+ " DESC")
     Flowable<List<Movie>> getAllTopRatedMovies();
 
     @Query("SELECT * FROM " + Config.MOVIE_TABLE_NAME + " WHERE "+Config.Params.title+" like :queryText")
     Flowable<List<Movie>> searchMovie(String queryText);
+
 }

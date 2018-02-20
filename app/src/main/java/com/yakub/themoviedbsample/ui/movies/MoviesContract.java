@@ -12,7 +12,9 @@ public interface MoviesContract {
 
     void clearMovies();
 
-    void showNoDataMessage();
+      void appendMovies(List<Movie> movies);
+
+      void showNoDataMessage();
 
     void showErrorMessage(String error);
 
@@ -24,14 +26,14 @@ public interface MoviesContract {
   }
 
   interface Presenter extends BasePresenter<MoviesContract.View> {
-    void loadPopularMovies(boolean onlineRequired);
+    void loadPopularMovies(boolean onlineRequired, int page);
 
     void loadTopRatedMovies(boolean onlineRequired);
 
     void searchMovie(boolean onlineRequired, String queryText);
 
-    void getMovie(long questionId);
+      void getMovie(boolean onlineRequired, long movieId);
 
-    void search(String questionTitle);
+      void search(String questionTitle);
   }
 }

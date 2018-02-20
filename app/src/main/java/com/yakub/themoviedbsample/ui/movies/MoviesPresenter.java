@@ -5,7 +5,6 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
 
-import com.yakub.themoviedbsample.R;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.data.repository.MoviesRepository;
 import com.yakub.themoviedbsample.util.schedulers.RunOn;
@@ -54,7 +53,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
   @Override @OnLifecycleEvent(Lifecycle.Event.ON_RESUME) public void onAttach() {
     switch (view.getSelectedOptionItemIndex()) {
       case 0:
-        loadPopularMovies(false);
+        loadPopularMovies(false, 1);
         break;
       case 1:
         loadTopRatedMovies(false);
@@ -73,12 +72,13 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
   }
 
 
-  @Override public void loadPopularMovies(boolean onlineRequired) {
+  @Override public void loadPopularMovies(boolean onlineRequired, int page) {
     // Clear old data on view
-    view.clearMovies();
+    if(page == 1)
+      view.clearMovies();
 
     // Load new one and populate it into view
-    Disposable disposable = repository.loadPopularMovies(onlineRequired)
+    Disposable disposable = repository.loadPopularMovies(onlineRequired, page)
         .subscribeOn(ioScheduler)
         .observeOn(uiScheduler)
         .subscribe(this::handleReturnedData, this::handleError, () -> view.stopLoadingIndicator());
@@ -109,9 +109,8 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
     disposeBag.add(disposable);
   }
 
-  @Override public void getMovie(long movieId) {
-    Disposable disposable = repository.getMovie(movieId)
-        .filter(movie -> movie != null)
+  @Override public void getMovie(boolean onlineRequired, long movieId) {
+    Disposable disposable = repository.getMovie(onlineRequired, movieId)
         .subscribeOn(ioScheduler)
         .observeOn(uiScheduler)
         .subscribe(movie -> view.showMovieDetail(movie));
@@ -120,7 +119,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
 
   @Override public void search(final String movieTitle) {
     // Load new one and populate it into view
-    Disposable disposable = repository.loadPopularMovies(false)
+    Disposable disposable = repository.searchMovie(false, movieTitle)
         .flatMap(Flowable::fromIterable)
         .filter(movie -> movie.getTitle() != null)
         .filter(movie -> movie.getTitle().toLowerCase().contains(movieTitle.toLowerCase()))
@@ -128,15 +127,15 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
         .toFlowable()
         .subscribeOn(ioScheduler)
         .observeOn(uiScheduler)
-        .subscribe(questions -> {
-          if (questions.isEmpty()) {
+        .subscribe(movies -> {
+          if (movies.isEmpty()) {
             // Clear old data in view
             view.clearMovies();
             // Show notification
             view.showEmptySearchResult();
           } else {
             // Update filtered data
-            view.showMovies(questions);
+            view.showMovies(movies);
           }
         });
 

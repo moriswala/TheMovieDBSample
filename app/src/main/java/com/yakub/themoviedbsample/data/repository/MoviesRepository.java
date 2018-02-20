@@ -4,12 +4,16 @@ import android.support.annotation.VisibleForTesting;
 
 import com.yakub.themoviedbsample.data.model.Movie;
 
+import org.reactivestreams.Publisher;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 public class MoviesRepository implements MoviesDataSource {
 
@@ -26,16 +30,16 @@ public class MoviesRepository implements MoviesDataSource {
     caches = new ArrayList<>();
   }
 
-  @Override public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote) {
+  @Override public Flowable<List<Movie>> loadPopularMovies(boolean forceRemote, int page ) {
     if (forceRemote) {
-      return refreshPopularMoviesData();
+      return refreshPopularMoviesData(page);
     } else {
       if (caches.size() > 0) {
         // if cache is available, return it immediately
         return Flowable.just(caches);
       } else {
         // else return data from local storage
-        return localDataSource.loadPopularMovies(false)
+        return localDataSource.loadPopularMovies(false, page)
             .take(1)
             .flatMap(Flowable::fromIterable)
             .doOnNext(question -> caches.add(question))
@@ -43,7 +47,7 @@ public class MoviesRepository implements MoviesDataSource {
             .toFlowable()
             .filter(list -> !list.isEmpty())
             .switchIfEmpty(
-                refreshPopularMoviesData()); // If local data is empty, fetch from remote source instead.
+                refreshPopularMoviesData(page)); // If local data is empty, fetch from remote source instead.
       }
     }
   }
@@ -98,8 +102,8 @@ public class MoviesRepository implements MoviesDataSource {
    *
    * @return the Flowable of newly fetched data.
    */
-  Flowable<List<Movie>> refreshPopularMoviesData() {
-    return remoteDataSource.loadPopularMovies(true).doOnNext(list -> {
+  Flowable<List<Movie>> refreshPopularMoviesData(int page) {
+    return remoteDataSource.loadPopularMovies(true, page).doOnNext(list -> {
       // Clear cache
       caches.clear();
       // Clear data in local storage
@@ -149,11 +153,41 @@ public class MoviesRepository implements MoviesDataSource {
   /**
    * Loads a question by its question id.
    *
+   *
+   * @param onlineRequired
    * @param movieId question's id.
    * @return a corresponding question from cache.
    */
-  public Flowable<Movie> getMovie(long movieId) {
-    return Flowable.fromIterable(caches).filter(movie -> movie.getId() == movieId);
+  public Flowable<Movie> getMovie(boolean onlineRequired, long movieId) {
+//    return Flowable.fromIterable(caches).filter(movie -> movie.getId() == movieId);
+
+    if (onlineRequired) {
+      return getMovie(movieId);
+    } else {
+        // else return data from local storage
+        return localDataSource.getMovie(onlineRequired, movieId)
+                .filter(o -> o!=null)
+                .switchIfEmpty(
+                        getMovie(movieId)); // If local data is empty, fetch from remote source instead.
+
+    }
+  }
+
+  Flowable<Movie> getMovie(long movieId) {
+    return remoteDataSource.getMovie(true, movieId)
+            .doOnError(new Consumer<Throwable>() {
+              @Override
+              public void accept(Throwable throwable) throws Exception {
+                Flowable.just(throwable);
+              }
+            })
+              .flatMap(new Function<Movie, Publisher<Movie>>() {
+              @Override
+              public Publisher<Movie> apply(Movie movie) throws Exception {
+                localDataSource.addMovie(movie);
+                return  Flowable.just(movie);
+              }
+            });
   }
 
   @Override public void addMovie(Movie question) {

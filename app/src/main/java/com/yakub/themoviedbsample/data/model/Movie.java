@@ -6,13 +6,14 @@ import android.arch.persistence.room.PrimaryKey;
 import com.google.gson.annotations.SerializedName;
 import com.yakub.themoviedbsample.data.Config;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by yakubmoriswala on 2/18/18.
  */
 @Entity(tableName = Config.MOVIE_TABLE_NAME)
-public class Movie {
+public class Movie implements Serializable{
 
     @SerializedName(Config.Params.genre_ids)
     public ArrayList<Integer> generIds;

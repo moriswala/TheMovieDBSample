@@ -1,33 +1,40 @@
 package com.yakub.themoviedbsample.ui.movies;
 
 import android.net.Uri;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
+
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.yakub.themoviedbsample.R;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.ui.base.BaseRecyclerViewAdapter;
 
-import io.reactivex.annotations.NonNull;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.QuestionViewHolder> {
-  class QuestionViewHolder extends RecyclerView.ViewHolder {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.reactivex.annotations.NonNull;
+
+class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolder> {
+  private final RecyclerView mRecyclerView;
+  private boolean isLoading;
+  private int totalItemCount;
+  private int lastVisibleItem;
+  private int visibleThreshold = 5;
+
+  class MovieViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.imgCoverImage) SimpleDraweeView imgCoverImage;
     @BindView(R.id.text_title) TextView titleText;
 //    @BindView(R.id.text_user) TextView userText;
 //    @BindView(R.id.text_created_time) TextView createdTimeText;
 //    @BindView(R.id.image_profile) ImageView profileImage;
 
-    public QuestionViewHolder(View view) {
+    public MovieViewHolder(View view) {
       super(view);
       ButterKnife.bind(this, view);
     }
@@ -35,26 +42,69 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.QuestionViewHo
 
   private List<Movie> moviesList;
 
-  public MoviesAdapter(@NonNull List<Movie> questions) {
+  public MoviesAdapter(@NonNull List<Movie> questions, @NonNull RecyclerView recyclerView) {
     this.moviesList = questions;
+    this.mRecyclerView = recyclerView;
+    this.mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+    {
+      @Override
+      public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+      {
+        super.onScrolled(recyclerView, dx, dy);
+
+        totalItemCount = recyclerView.getLayoutManager().getItemCount();
+        int lastVisibleItem = ((GridLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+//        lastVisibleItem = getLastVisibleItem(lastItemsArray);
+
+        if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold))
+        {
+          if (onLoadMoreListener != null)
+          {
+            onLoadMoreListener.onLoadMore();
+          }
+          isLoading = true;
+        }
+      }
+
+      public int getLastVisibleItem(int[] lastVisibleItemPositions)
+      {
+        int maxSize = 0;
+        for (int i = 0; i < lastVisibleItemPositions.length; i++)
+        {
+          if (i == 0)
+          {
+            maxSize = lastVisibleItemPositions[i];
+          }
+          else if (lastVisibleItemPositions[i] > maxSize)
+          {
+            maxSize = lastVisibleItemPositions[i];
+          }
+        }
+        return maxSize;
+      }
+    });
   }
 
-  @Override public QuestionViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+  public void setLoaded() {
+    isLoading = false;
+  }
+
+  @Override public MovieViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
     View view = LayoutInflater.from(viewGroup.getContext())
-        .inflate(R.layout.item_question, viewGroup, false);
-    return new QuestionViewHolder(view);
+        .inflate(R.layout.item_movie, viewGroup, false);
+    return new MovieViewHolder(view);
   }
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
     super.onBindViewHolder(viewHolder, i);
-    QuestionViewHolder vh = (QuestionViewHolder) viewHolder; //safe cast
+    MovieViewHolder vh = (MovieViewHolder) viewHolder; //safe cast
     Movie movie = moviesList.get(i);
     vh.titleText.setText(movie.getTitle());
 //    vh.userText.setText(movie.getOverview());
 //    vh.createdTimeText.setText(DateTimeUtils.formatRelativeTime(movie.getReleaseDate()));
 //    Glide.with(vh.profileImage).load(movie.getBackdropPath()).into(vh.profileImage);
     Uri uri = Uri.parse("https://image.tmdb.org/t/p/w300/"+movie.getBackdropPath());
-    vh.imgCoverImage.setImageURI(uri);
+//    vh.imgCoverImage.setImageURI(uri);
   }
 
   @Override public int getItemCount() {
@@ -63,6 +113,12 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.QuestionViewHo
 
   public void replaceData(List<Movie> movies) {
     this.moviesList.clear();
+    this.moviesList.addAll(movies);
+    notifyDataSetChanged();
+  }
+
+  public void appendData(List<Movie> movies) {
+//    this.moviesList.clear();
     this.moviesList.addAll(movies);
     notifyDataSetChanged();
   }
