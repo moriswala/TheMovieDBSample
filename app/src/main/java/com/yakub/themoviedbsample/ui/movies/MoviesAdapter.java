@@ -34,9 +34,6 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolde
     @BindView(R.id.text_title) TextView titleText;
     @BindView(R.id.rattingBar) RatingBar rattingBar;
     @BindView(R.id.textVoteCount) TextView textVoteCount;
-//    @BindView(R.id.text_user) TextView userText;
-//    @BindView(R.id.text_created_time) TextView createdTimeText;
-//    @BindView(R.id.image_profile) ImageView profileImage;
 
     public MovieViewHolder(View view) {
       super(view);

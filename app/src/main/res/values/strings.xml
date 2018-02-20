@@ -14,4 +14,5 @@
     <string name="title">Title :</string>
   <string name="released_on">Released on :</string>
   <string name="story">Story :</string>
+    <string name="welcome_to">Welcome to</string>
 </resources>
