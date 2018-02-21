@@ -19,6 +19,7 @@
         android:id="@+id/imgCoverImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="200dp"
         fresco:placeholderImage="@drawable/place_holder"
         />
     <TextView
