@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.yakub.themoviedbsample.R;
+import com.yakub.themoviedbsample.data.Config;
 import com.yakub.themoviedbsample.ui.base.BaseActivity;
 import com.yakub.themoviedbsample.ui.moviedetail.DaggerMovieDetailComponent;
 import com.yakub.themoviedbsample.ui.movies.MoviesActivity;
@@ -28,7 +29,7 @@ public class SplashActivity extends BaseActivity implements SplashContract.View 
           }
         });
       }
-    }, 3000);
+    }, Config.SPLASH_WAIT_TIME_MILLI);
   }
 
   private void initializePresenter() {

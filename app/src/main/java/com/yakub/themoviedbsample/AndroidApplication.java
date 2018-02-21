@@ -2,12 +2,14 @@ package com.yakub.themoviedbsample;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 import com.yakub.themoviedbsample.data.DaggerMoviesRepositoryComponent;
 import com.yakub.themoviedbsample.data.MoviesRepositoryComponent;
 
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class AndroidApplication extends Application {
@@ -17,6 +19,7 @@ public class AndroidApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+    Fabric.with(this, new Crashlytics());
 
     initializeDependencies();
     Fresco.initialize(this);

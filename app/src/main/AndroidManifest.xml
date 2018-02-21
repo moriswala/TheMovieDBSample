@@ -27,6 +27,9 @@
           android:name="android.support.PARENT_ACTIVITY"
           android:value=".ui.movies.MoviesActivity" />
     </activity>
-  </application>
+      <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="01d6d8e7ed503a8e5f0a4fc989357aad70ad4637" />
+    </application>
 
 </manifest>

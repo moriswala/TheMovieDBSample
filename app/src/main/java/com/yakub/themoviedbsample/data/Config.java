@@ -8,9 +8,12 @@ public class Config {
   public static final String DATABASE_NAME = "themoviedb.db";
   public static final String MOVIE_TABLE_NAME = "movie";
     public static final String API_KEY = "6177565665ecbc9cc6b09fbe70f78fec";
+  public static final long SPLASH_WAIT_TIME_MILLI = 3000;
+  public static final String BACKDROP_BASE_PATH = "https://image.tmdb.org/t/p/w300/";
+  public static final String POSTER_BASE_PATH = "https://image.tmdb.org/t/p/w500/";
 
 
-    public class Params {
+  public class Params {
 
     public static final String adult = "adult";
     public static final String page = "page";

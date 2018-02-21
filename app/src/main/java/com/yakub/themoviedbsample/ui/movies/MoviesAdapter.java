@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.yakub.themoviedbsample.R;
+import com.yakub.themoviedbsample.data.Config;
 import com.yakub.themoviedbsample.data.model.Movie;
 import com.yakub.themoviedbsample.ui.base.BaseRecyclerViewAdapter;
 import com.yakub.themoviedbsample.util.NumberUtils;
@@ -106,7 +107,7 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolde
 //    vh.userText.setText(movie.getOverview());
 //    vh.createdTimeText.setText(DateTimeUtils.formatRelativeTime(movie.getReleaseDate()));
 //    Glide.with(vh.profileImage).load(movie.getBackdropPath()).into(vh.profileImage);
-    Uri uri = Uri.parse("https://image.tmdb.org/t/p/w300/"+movie.getBackdropPath());
+    Uri uri = Uri.parse(Config.BACKDROP_BASE_PATH + movie.getBackdropPath());
     vh.imgCoverImage.setImageURI(uri);
   }
 
