@@ -9,11 +9,11 @@ import io.reactivex.annotations.NonNull;
  */
 public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-//  protected OnLoadMoreListener onLoadMoreListener;
-//
-//  public interface OnLoadMoreListener {
-//    void onLoadMore();
-//  }
+  protected OnLoadMoreListener onLoadMoreListener;
+
+  public interface OnLoadMoreListener {
+    void onLoadMore();
+  }
 
   private RecyclerViewListener.OnItemClickListener itemClickListener;
   private RecyclerViewListener.OnItemLongClickListener itemLongClickListener;
@@ -23,9 +23,9 @@ public abstract class BaseRecyclerViewAdapter<VH extends RecyclerView.ViewHolder
     this.itemClickListener = itemClickListener;
   }
 
-//  public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener){
-//    this.onLoadMoreListener = onLoadMoreListener;
-//  }
+  public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener){
+    this.onLoadMoreListener = onLoadMoreListener;
+  }
   public void setOnItemLongClickListener(
       @NonNull RecyclerViewListener.OnItemLongClickListener itemLongClickListener) {
     this.itemLongClickListener = itemLongClickListener;

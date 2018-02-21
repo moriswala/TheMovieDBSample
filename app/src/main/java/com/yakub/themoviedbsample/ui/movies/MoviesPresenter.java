@@ -50,7 +50,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LifecycleObser
     disposeBag = new CompositeDisposable();
   }
 
-  @Override @OnLifecycleEvent(Lifecycle.Event.ON_RESUME) public void onAttach() {
+  @Override @OnLifecycleEvent(Lifecycle.Event.ON_CREATE) public void onAttach() {
     switch (view.getSelectedOptionItemIndex()) {
       case 0:
         loadPopularMovies(false, 1);

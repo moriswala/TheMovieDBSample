@@ -47,44 +47,44 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolde
   public MoviesAdapter(@NonNull List<Movie> questions, @NonNull RecyclerView recyclerView) {
     this.moviesList = questions;
     this.mRecyclerView = recyclerView;
-//    this.mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-//    {
-//      @Override
-//      public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-//      {
-//        super.onScrolled(recyclerView, dx, dy);
-//
-//        totalItemCount = recyclerView.getLayoutManager().getItemCount();
-//        int lastVisibleItem = ((GridLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-////        lastVisibleItem = getLastVisibleItem(lastItemsArray);
-//
-//        if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold))
-//        {
-//          if (onLoadMoreListener != null)
-//          {
-//            onLoadMoreListener.onLoadMore();
-//          }
-//          isLoading = true;
-//        }
-//      }
-//
-//      public int getLastVisibleItem(int[] lastVisibleItemPositions)
-//      {
-//        int maxSize = 0;
-//        for (int i = 0; i < lastVisibleItemPositions.length; i++)
-//        {
-//          if (i == 0)
-//          {
-//            maxSize = lastVisibleItemPositions[i];
-//          }
-//          else if (lastVisibleItemPositions[i] > maxSize)
-//          {
-//            maxSize = lastVisibleItemPositions[i];
-//          }
-//        }
-//        return maxSize;
-//      }
-//    });
+    this.mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+    {
+      @Override
+      public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+      {
+        super.onScrolled(recyclerView, dx, dy);
+
+        totalItemCount = recyclerView.getLayoutManager().getItemCount();
+        int lastVisibleItem = ((GridLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+//        lastVisibleItem = getLastVisibleItem(lastItemsArray);
+
+        if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold))
+        {
+          if (onLoadMoreListener != null)
+          {
+            onLoadMoreListener.onLoadMore();
+          }
+          isLoading = true;
+        }
+      }
+
+      public int getLastVisibleItem(int[] lastVisibleItemPositions)
+      {
+        int maxSize = 0;
+        for (int i = 0; i < lastVisibleItemPositions.length; i++)
+        {
+          if (i == 0)
+          {
+            maxSize = lastVisibleItemPositions[i];
+          }
+          else if (lastVisibleItemPositions[i] > maxSize)
+          {
+            maxSize = lastVisibleItemPositions[i];
+          }
+        }
+        return maxSize;
+      }
+    });
   }
 
   public void setLoaded() {
