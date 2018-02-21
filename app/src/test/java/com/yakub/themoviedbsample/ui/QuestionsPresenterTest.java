@@ -1,14 +1,10 @@
 package com.yakub.themoviedbsample.ui;
 
-import com.yakub.themoviedbsample.data.model.Question;
-import com.yakub.themoviedbsample.data.repository.QuestionRepository;
-import com.yakub.themoviedbsample.ui.questions.QuestionsContract;
-import com.yakub.themoviedbsample.ui.questions.QuestionsPresenter;
-import io.reactivex.Flowable;
-import io.reactivex.schedulers.TestScheduler;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.yakub.themoviedbsample.data.model.Movie;
+import com.yakub.themoviedbsample.data.repository.MoviesRepository;
+import com.yakub.themoviedbsample.ui.movies.MoviesContract;
+import com.yakub.themoviedbsample.ui.movies.MoviesPresenter;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +14,13 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.TestScheduler;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -26,39 +29,39 @@ import static org.mockito.Mockito.never;
 
 @RunWith(Parameterized.class)
 public class QuestionsPresenterTest {
-  private static final Question QUESTION1 = new Question();
-  private static final Question QUESTION2 = new Question();
-  private static final Question QUESTION3 = new Question();
-  private static final List<Question> NO_QUESTION = Collections.emptyList();
-  private static final List<Question> THREE_QUESTIONS =
-      Arrays.asList(QUESTION1, QUESTION2, QUESTION3);
+  private static final Movie MOVIE1 = new Movie();
+  private static final Movie MOVIE2 = new Movie();
+  private static final Movie MOVIE3 = new Movie();
+  private static final List<Movie> NO_MOVIE = Collections.emptyList();
+  private static final List<Movie> THREE_MOVIE =
+      Arrays.asList(MOVIE1, MOVIE2, MOVIE3);
 
   @Parameters public static Object[] data() {
-    return new Object[] { NO_QUESTION, THREE_QUESTIONS };
+    return new Object[] {NO_MOVIE, THREE_MOVIE};
   }
 
-  @Parameter public List<Question> questions;
+  @Parameter public List<Movie> movies;
 
-  @Mock private QuestionRepository repository;
+  @Mock private MoviesRepository repository;
 
-  @Mock private QuestionsContract.View view;
+  @Mock private MoviesContract.View view;
 
   private TestScheduler testScheduler;
 
-  private QuestionsPresenter presenter;
+  private MoviesPresenter presenter;
 
   @Before public void setUp() {
     MockitoAnnotations.initMocks(this);
     testScheduler = new TestScheduler();
-    presenter = new QuestionsPresenter(repository, view, testScheduler, testScheduler);
+    presenter = new MoviesPresenter(repository, view, testScheduler, testScheduler);
   }
 
   @Test public void loadQuestions_ShouldAlwaysStopLoadingIndicatorOnView_WhenComplete() {
     // Given
-    given(repository.loadQuestions(true)).willReturn(Flowable.just(questions));
+    given(repository.loadPopularMovies(true,1)).willReturn(Flowable.just(movies));
 
     // When
-    presenter.loadQuestions(true);
+    presenter.loadPopularMovies(false, 1);
     testScheduler.triggerActions();
 
     // Then
@@ -67,89 +70,89 @@ public class QuestionsPresenterTest {
 
   @Test public void loadQuestions_ShouldShowQuestionOnView_WithDataReturned() {
     // Given
-    given(repository.loadQuestions(true)).willReturn(Flowable.just(THREE_QUESTIONS));
+    given(repository.loadPopularMovies(true,1)).willReturn(Flowable.just(THREE_MOVIE));
 
     // When
-    presenter.loadQuestions(true);
+    presenter.loadPopularMovies(false, 1);
     testScheduler.triggerActions();
 
     // Then
-    then(view).should().clearQuestions();
-    then(view).should().showQuestions(THREE_QUESTIONS);
+    then(view).should().clearMovies();
+    then(view).should().showMovies(THREE_MOVIE);
     then(view).should(atLeastOnce()).stopLoadingIndicator();
   }
 
   @Test public void loadQuestions_ShouldShowMessage_WhenNoDataReturned() {
     // Given
-    given(repository.loadQuestions(true)).willReturn(Flowable.just(NO_QUESTION));
+    given(repository.loadPopularMovies(true,1)).willReturn(Flowable.just(NO_MOVIE));
 
     // When
-    presenter.loadQuestions(true);
+    presenter.loadPopularMovies(false, 1);
     testScheduler.triggerActions();
 
     // Then
-    then(view).should().clearQuestions();
-    then(view).should(never()).showQuestions(any());
+    then(view).should().clearMovies();
+    then(view).should(never()).showMovies(any());
     then(view).should().showNoDataMessage();
     then(view).should(atLeastOnce()).stopLoadingIndicator();
   }
 
   @Test public void getQuestion_ShouldShowDetailOnView() {
     // Given
-    given(repository.getQuestion(1)).willReturn(Flowable.just(QUESTION1));
+    given(repository.getMovie(true, 1)).willReturn(Flowable.just(MOVIE1));
 
     // When
-    presenter.getQuestion(1);
+    presenter.getMovie(false,1);
     testScheduler.triggerActions();
 
     // Then
-    then(view).should().showQuestionDetail(QUESTION1);
+    then(view).should().showMovieDetail(MOVIE1);
   }
 
   @Test public void search_ResultShouldBeShownOnView_WhenFilteredDataIsNotEmpty() {
     // Given
-    QUESTION1.setTitle("activity onCreate");
-    QUESTION2.setTitle("activity onDestroy");
-    QUESTION3.setTitle("fragment");
-    given(repository.loadQuestions(false)).willReturn(Flowable.just(THREE_QUESTIONS));
+    MOVIE1.setTitle("activity onCreate");
+    MOVIE2.setTitle("activity onDestroy");
+    MOVIE3.setTitle("fragment");
+    given(repository.loadPopularMovies(false,1)).willReturn(Flowable.just(THREE_MOVIE));
 
     // When
     presenter.search("activity");
     testScheduler.triggerActions();
 
     // Then
-    // Return a list of questions which should contains only question 1.
-    then(view).should().showQuestions(Arrays.asList(QUESTION1, QUESTION2));
+    // Return a list of movies which should contains only question 1.
+    then(view).should().showMovies(Arrays.asList(MOVIE1, MOVIE2));
     then(view).shouldHaveNoMoreInteractions();
   }
 
   @Test public void search_EmptyMessageShouldBeShownOnView_WhenDataIsEmpty() {
     // Given
-    given(repository.loadQuestions(false)).willReturn(Flowable.just(NO_QUESTION));
+    given(repository.loadPopularMovies(true, 1)).willReturn(Flowable.just(NO_MOVIE));
 
     // When
     presenter.search(any());
     testScheduler.triggerActions();
 
     // Then
-    then(view).should().clearQuestions();
+    then(view).should().clearMovies();
     then(view).should().showEmptySearchResult();
     then(view).shouldHaveNoMoreInteractions();
   }
 
   @Test public void search_EmptyMessageShouldBeShownOnView_WhenNoDataMatchesQuery() {
     // Given
-    QUESTION1.setTitle("activity onCreate");
-    QUESTION2.setTitle("activity onDestroy");
-    QUESTION3.setTitle("fragment");
-    given(repository.loadQuestions(false)).willReturn(Flowable.just(NO_QUESTION));
+    MOVIE1.setTitle("activity onCreate");
+    MOVIE2.setTitle("activity onDestroy");
+    MOVIE3.setTitle("fragment");
+    given(repository.loadPopularMovies(false,1)).willReturn(Flowable.just(NO_MOVIE));
 
     // When
     presenter.search("invalid question");
     testScheduler.triggerActions();
 
     // Then
-    then(view).should().clearQuestions();
+    then(view).should().clearMovies();
     then(view).should().showEmptySearchResult();
     then(view).shouldHaveNoMoreInteractions();
   }

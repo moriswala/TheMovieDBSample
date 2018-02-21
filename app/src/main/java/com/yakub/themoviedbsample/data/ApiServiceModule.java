@@ -1,11 +1,13 @@
 package com.yakub.themoviedbsample.data;
 
 import com.yakub.themoviedbsample.data.api.HeaderInterceptor;
-import com.yakub.themoviedbsample.data.api.QuestionService;
-import dagger.Module;
-import dagger.Provides;
+import com.yakub.themoviedbsample.data.api.MovieService;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.CallAdapter;
@@ -115,7 +117,7 @@ public class ApiServiceModule {
 
   @Provides
   @Singleton
-  QuestionService provideQuestionService(Retrofit retrofit) {
-    return retrofit.create(QuestionService.class);
+  MovieService provideQuestionService(Retrofit retrofit) {
+    return retrofit.create(MovieService.class);
   }
 }

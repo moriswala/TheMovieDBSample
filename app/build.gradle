@@ -1,4 +1,45 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+//____________________________
+
+apply plugin: 'findbugs'
+
+task customFindbugs(type: FindBugs) {
+  ignoreFailures = false
+  effort = "max"
+  reportLevel = "low"
+  classes = files("$project.buildDir/intermediates/classes")
+
+  // Use this only if you want exclude some errors
+  excludeFilter = file("$rootProject.rootDir/config/findbugs/exclude.xml")
+
+  source = fileTree('src/main/java/')
+  classpath = files()
+
+  reports {
+    xml.enabled = false
+    xml.withMessages = true
+    html.enabled = !xml.isEnabled()
+    xml.destination "$project.buildDir/outputs/findbugs/findbugs-output.xml"
+    html.destination "$project.buildDir/outputs/findbugs/findbugs-output.html"
+  }
+}
+
+build.dependsOn customFindbugs
+//____________________________
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 apply plugin: 'jacoco-android'
 apply from: 'https://raw.githubusercontent.com/mcrafts/dot-gradles/master/test-report.gradle'
 
@@ -99,6 +140,12 @@ dependencies {
   implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
   implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
 
+  //material searchview
+  implementation "com.miguelcatalan:materialsearchview:$rootProject.materialSearchViewVersion"
+
+  //Image loading and caching
+  implementation "com.facebook.fresco:fresco:$rootProject.frescoVersion"
+
   // Local Unit Test
   testImplementation "junit:junit:$rootProject.junitVersion"
   testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
@@ -110,4 +157,7 @@ dependencies {
   debugImplementation "com.squareup.leakcanary:leakcanary-android:$rootProject.leakcanaryVersion"
   releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakcanaryVersion"
   testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakcanaryVersion"
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
+        transitive = true;
+    }
 }

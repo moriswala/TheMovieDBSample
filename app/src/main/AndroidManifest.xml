@@ -12,14 +12,24 @@
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
     <activity
-        android:name=".ui.questions.QuestionsActivity"
-        >
+        android:name=".ui.movies.MoviesActivity"
+        />
+    <activity android:name=".ui.splash.SplashActivity"
+        android:theme="@style/AppTheme.NoActionBar">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-  </application>
+    <activity android:name=".ui.moviedetail.MovieDetailActivity">
+      <meta-data
+          android:name="android.support.PARENT_ACTIVITY"
+          android:value=".ui.movies.MoviesActivity" />
+    </activity>
+      <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="01d6d8e7ed503a8e5f0a4fc989357aad70ad4637" />
+    </application>
 
 </manifest>
