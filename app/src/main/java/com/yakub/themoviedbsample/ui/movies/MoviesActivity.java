@@ -80,20 +80,20 @@ public class MoviesActivity extends BaseActivity implements MoviesContract.View 
     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
     adapter.setOnItemClickListener(
         (view, position) -> presenter.getMovie(true, adapter.getItem(position).getId()));
-    adapter.setOnLoadMoreListener(new BaseRecyclerViewAdapter.OnLoadMoreListener()
-    {
-      @Override
-      public void onLoadMore()
-      {
-        if (adapter.getItemCount() < totalMovies)
-        {
-//                    int nextPage = homeProductsResponce.getOutput().getNavigation().getPage()+1;
-          page = page+1;
-          presenter.loadPopularMovies(true, page);
-        }
-
-      }
-    });
+//    adapter.setOnLoadMoreListener(new BaseRecyclerViewAdapter.OnLoadMoreListener()
+//    {
+//      @Override
+//      public void onLoadMore()
+//      {
+//        if (adapter.getItemCount() < totalMovies)
+//        {
+////                    int nextPage = homeProductsResponce.getOutput().getNavigation().getPage()+1;
+//          page = page+1;
+//          presenter.loadPopularMovies(true, page);
+//        }
+//
+//      }
+//    });
 
     // Refresh layout
     refreshLayout.setOnRefreshListener(() -> {
