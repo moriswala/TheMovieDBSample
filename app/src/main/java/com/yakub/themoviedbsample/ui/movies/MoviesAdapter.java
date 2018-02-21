@@ -107,7 +107,7 @@ class MoviesAdapter extends BaseRecyclerViewAdapter<MoviesAdapter.MovieViewHolde
 //    vh.userText.setText(movie.getOverview());
 //    vh.createdTimeText.setText(DateTimeUtils.formatRelativeTime(movie.getReleaseDate()));
 //    Glide.with(vh.profileImage).load(movie.getBackdropPath()).into(vh.profileImage);
-    Uri uri = Uri.parse(Config.BACKDROP_BASE_PATH + movie.getBackdropPath());
+    Uri uri = Uri.parse(Config.POSTER_BASE_PATH + movie.getPosterPath());
     vh.imgCoverImage.setImageURI(uri);
   }
 

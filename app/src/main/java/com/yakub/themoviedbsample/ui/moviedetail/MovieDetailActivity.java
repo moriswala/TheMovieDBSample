@@ -62,7 +62,7 @@ public class MovieDetailActivity extends BaseActivity implements MovieDetailCont
     String formattedDate = DateTimeUtils.formatDate(DateTimeUtils.parseDate(movie.getReleaseDate()));
     textReleaseDate.setText(getString(R.string.released_on)+formattedDate);
     textOverview.setText(getString(R.string.story)+movie.getOverview());
-    Uri uri = Uri.parse(Config.POSTER_BASE_PATH + movie.getPosterPath());
+    Uri uri = Uri.parse(Config.BACKDROP_BASE_PATH + movie.getBackdropPath());
     imgCoverImage.setImageURI(uri);
   }
 
